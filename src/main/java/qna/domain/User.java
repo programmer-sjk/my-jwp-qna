@@ -17,6 +17,7 @@ public class User extends BaseEntity {
     private String password;
     @Column(length = 20, nullable = false)
     private String name;
+
     @Column(length = 50)
     private String email;
 
@@ -55,6 +56,10 @@ public class User extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     @Override

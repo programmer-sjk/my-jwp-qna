@@ -53,6 +53,14 @@ public class Question extends BaseEntity  {
         return deleted;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public String getContents() {
+        return contents;
+    }
+
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
