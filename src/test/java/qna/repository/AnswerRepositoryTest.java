@@ -28,8 +28,8 @@ class AnswerRepositoryTest {
                 () -> assertThat(actual.getId()).isNotNull(),
                 () -> assertThat(actual.isDeleted()).isEqualTo(A1.isDeleted()),
                 () -> assertThat(actual.getContents()).isEqualTo(A1.getContents()),
-                () -> assertThat(actual.getQuestionId()).isEqualTo(A1.getQuestionId()),
-                () -> assertThat(actual.getWriterId()).isEqualTo(A1.getWriterId())
+                () -> assertThat(actual.getQuestion()).isEqualTo(A1.getQuestion()),
+                () -> assertThat(actual.getWriter()).isEqualTo(A1.getWriter())
         );
     }
 
@@ -59,7 +59,7 @@ class AnswerRepositoryTest {
     void findByQuestionId() {
         Answer actual = answerRepository.save(A1);
 
-        Answer result = answerRepository.findByQuestionIdAndDeletedFalse(actual.getQuestionId()).get(0);
+        Answer result = answerRepository.findByQuestionIdAndDeletedFalse(actual.getQuestion().getId()).get(0);
 
         assertThat(actual == result).isTrue();
     }
@@ -70,7 +70,7 @@ class AnswerRepositoryTest {
         Answer actual = answerRepository.save(A2);
         actual.setDeleted(true);
 
-        List<Answer> result = answerRepository.findByQuestionIdAndDeletedFalse(actual.getQuestionId());
+        List<Answer> result = answerRepository.findByQuestionIdAndDeletedFalse(actual.getQuestion().getId());
 
         assertThat(result).hasSize(0);
     }
