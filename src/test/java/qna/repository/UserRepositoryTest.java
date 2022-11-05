@@ -9,7 +9,7 @@ import qna.fixture.TestUserFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static qna.domain.UserTest.JAVAJIGI;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 class UserRepositoryTest {
@@ -38,6 +38,6 @@ class UserRepositoryTest {
 
         User result = userRepository.findByUserId(expect.getUserId()).get();
 
-        assertThat(expect == result).isTrue();
+        assertEquals(expect, result);
     }
 }
