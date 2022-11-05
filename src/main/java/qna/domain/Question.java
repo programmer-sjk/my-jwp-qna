@@ -10,7 +10,8 @@ public class Question extends BaseEntity  {
     private String title;
     @Lob
     private String contents;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "writer_id")
     private User writer;
     @Column(nullable = false)
     private boolean deleted = false;
@@ -25,7 +26,7 @@ public class Question extends BaseEntity  {
         this.contents = contents;
     }
 
-    public Question() {
+    protected Question() {
 
     }
 
