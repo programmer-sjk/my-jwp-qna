@@ -1,10 +1,10 @@
 package qna.repository;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import qna.domain.Answer;
 import qna.domain.Question;
 import qna.domain.User;
@@ -12,6 +12,8 @@ import qna.fixture.TestAnswerFactory;
 import qna.fixture.TestQuestionFactory;
 import qna.fixture.TestUserFactory;
 
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnitUtil;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@DataJpaTest
+@DataJpaTest(showSql = false)
 class AnswerRepositoryTest {
     @Autowired
     private AnswerRepository answerRepository;
@@ -30,12 +32,11 @@ class AnswerRepositoryTest {
     @Autowired
     private QuestionRepository questionRepository;
 
-    @BeforeEach
-    void clear() {
-        answerRepository.deleteAll();
-        userRepository.deleteAll();
-        questionRepository.deleteAll();
-    }
+    @Autowired
+    private EntityManagerFactory factory;
+
+    @Autowired
+    private TestEntityManager testEntityManager;
 
     @DisplayName("답변을 저장할 수 있다")
     @Test
@@ -103,5 +104,21 @@ class AnswerRepositoryTest {
         List<Answer> result = answerRepository.findByQuestionIdAndDeletedFalse(answer.getQuestion().getId());
 
         assertThat(result).hasSize(0);
+    }
+
+    @DisplayName("답변 조회시 writer, question이 지연로딩 되는지 확인한다")
+    @Test
+    void lazyLoadingTest() {
+        PersistenceUnitUtil persistenceUnitUtil = factory.getPersistenceUnitUtil();
+        User writer = userRepository.save(TestUserFactory.create("writer"));
+        Question question = questionRepository.save(TestQuestionFactory.create(writer));
+        answerRepository.save(TestAnswerFactory.create(writer, question));
+        testEntityManager.flush();
+        testEntityManager.clear();
+
+        Answer result = answerRepository.findAll().get(0);
+
+        assertThat(persistenceUnitUtil.isLoaded(result, "writer")).isFalse();
+        assertThat(persistenceUnitUtil.isLoaded(result, "question")).isFalse();
     }
 }
