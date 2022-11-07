@@ -59,7 +59,7 @@ class QuestionRepositoryTest {
         Question question = questionRepository.save(TestQuestionFactory.create(writer));
         question.setDeleted(true);
 
-        assertThat(questionRepository.findByDeletedFalse()).hasSize(0);
+        assertThat(questionRepository.findByDeletedFalse()).isEmpty();
     }
 
     @DisplayName("id로 조회할 수 있다")
