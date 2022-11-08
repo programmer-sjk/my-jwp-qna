@@ -1,6 +1,5 @@
 package qna.repository;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import qna.fixture.TestUserFactory;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnitUtil;
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,9 +34,6 @@ class AnswerRepositoryTest {
 
     @Autowired
     private QuestionRepository questionRepository;
-
-    @Autowired
-    private DeleteHistoryRepository deleteHistoryRepository;
 
     @Autowired
     private EntityManagerFactory factory;
@@ -82,7 +77,7 @@ class AnswerRepositoryTest {
         User writer = userRepository.save(TestUserFactory.create("writer"));
         Question question = questionRepository.save(TestQuestionFactory.create(writer));
         Answer answer = answerRepository.save(TestAnswerFactory.create(writer, question));
-        answer.setDeleted(true);
+        answer.softDelete();
 
         Optional<Answer> result = answerRepository.findByIdAndDeletedFalse(answer.getId());
 
@@ -107,11 +102,11 @@ class AnswerRepositoryTest {
         User writer = userRepository.save(TestUserFactory.create("writer"));
         Question question = questionRepository.save(TestQuestionFactory.create(writer));
         Answer answer = answerRepository.save(TestAnswerFactory.create(writer, question));
-        answer.setDeleted(true);
+        answer.softDelete();
 
         List<Answer> result = answerRepository.findByQuestionIdAndDeletedFalse(answer.getQuestion().getId());
 
-        assertThat(result).hasSize(0);
+        assertThat(result).isEmpty();
     }
 
     @DisplayName("답변 조회시 writer, question이 지연로딩 되는지 확인한다")
